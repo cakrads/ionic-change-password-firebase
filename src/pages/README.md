@@ -1,4 +1,4 @@
-#Ionic Change Password Firebase#
+# Ionic Change Password Firebase#
 
 Copy this code to your Ionic_Project/src/pages
 
