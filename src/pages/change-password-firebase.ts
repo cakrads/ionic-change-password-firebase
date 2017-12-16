@@ -1,7 +1,6 @@
 import { AngularFireAuth } from 'angularfire2/auth';
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { FundraProvider } from '../../providers/fundra/fundra';
+import { IonicPage, NavController, NavParams, LoadingController, ToastController } from 'ionic-angular';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import * as firebase from 'firebase';
 
@@ -13,13 +12,15 @@ import * as firebase from 'firebase';
 export class ChangePasswordFirebasePage {
 
   profile:any;
+  loadingAlert:any;
   private changePass : FormGroup;
   constructor(
     public navCtrl: NavController, 
     public navParams: NavParams,
     public afAuth:AngularFireAuth,
-    public myprovider:FundraProvider,
     private fBuild: FormBuilder,
+    private toastCtrl: ToastController,
+    private loadingCtrl:LoadingController,
   ) {
     this.profile = this.navParams.data.item;
     this.changePass = this.fBuild.group({
@@ -38,15 +39,44 @@ export class ChangePasswordFirebasePage {
       this.afAuth.auth.currentUser.updatePassword(this.changePass.value.newPassword).then(data=>{
         console.log(data);
         console.log("new password :", this.changePass.value.newPassword);
-        this.myprovider.showToast("Change Password Success!!");
+        this.showToast("Change Password Success!!");
       }, error=>{
         console.log(error);
-        this.myprovider.toastError("Something Error");
+        this.toastError("Something Error");
       });
     }, error=> {
       console.log(error);
-      this.myprovider.toastError("Your Old Password is Wrong");
+      this.toastError("Your Old Password is Wrong");
     });
   
+  }
+
+  showToast(msg){
+    let toast = this.toastCtrl.create({
+       message : msg,
+       position : 'top',
+       duration : 1000
+     });
+     toast.present();
+  }
+
+  toastError(msg){
+     let toast = this.toastCtrl.create({
+       message : msg,
+       position : 'top',
+       cssClass : 'toastError',
+       duration : 3000
+     });
+    
+     toast.present();
+  }
+
+  showLoadingAlert(content, duration){
+    this.loadingAlert = this.loadingCtrl.create({content: content, duration: duration});
+    this.loadingAlert.present();
+  }
+
+  closeLoadingAlert(){
+    this.loadingAlert.dismiss();
   }
 }
